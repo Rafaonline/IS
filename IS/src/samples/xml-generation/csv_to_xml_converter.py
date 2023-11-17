@@ -106,7 +106,7 @@ class CSVtoXMLConverter:
         root_el.append(store_el)
         root_el.append(city_el)
 
-        """root_el.append(customer_el)"""
+        root_el.append(customer_el)
 
         return root_el
 
