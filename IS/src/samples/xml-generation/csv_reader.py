@@ -13,12 +13,21 @@ class CSVReader:
                 yield row
         file.close()
 
-    def read_entities(self, attr, builder, after_create=None):
+    @staticmethod
+    def __process_entity(entities, row, key, builder, after_create=None):
+        if key not in entities:
+            entities[key] = builder(row, key)
+            if after_create is not None:
+                after_create(entities[key], row)
+
+    def read_entities(self, builder, after_create=None, get_keys=None):
         entities = {}
         for row in self.loop():
-            e = row[attr]
-            if e not in entities:
-                entities[e] = builder(row)
-                after_create is not None and after_create(entities[e], row)
+            keys = get_keys(row)
+            if isinstance(keys, str):
+                keys = [keys]
+
+            for key in keys:
+                CSVReader.__process_entity(entities, row, key, builder, after_create)
 
         return entities

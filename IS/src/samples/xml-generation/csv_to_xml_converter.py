@@ -1,12 +1,14 @@
 import csv
 import xml.dom.minidom as md
 import xml.etree.ElementTree as ET
+import ast
 
 from csv_reader import CSVReader
 
 from entities.city import City
 from entities.store import Store
 from entities.produto import Produto
+from entities.category import Category
 from entities.customer import Customer
 """
 from entities.produtos import Produtos
@@ -24,27 +26,30 @@ class CSVtoXMLConverter:
         # read city
 
         cities = self._reader.read_entities(
-            attr="City",
-            builder=lambda row: City(row["City"])
+            builder=lambda row, _: City(row["City"]),
+            get_keys=lambda row: row["City"]
         )
 
         # read stores
         stores = self._reader.read_entities(
-            attr="Store_Type",
-            builder=lambda row: Store(row["Store_Type"])
+            get_keys=lambda row: row["Store_Type"],
+            builder=lambda row, _: Store(row["Store_Type"])
         )
 
         produtos = self._reader.read_entities(
-            attr="Product",
-            builder=lambda row: Produto(row["Product"])
+            builder=lambda row, key: Produto(key),
+            get_keys=lambda row:  ast.literal_eval(row["Product"])
         )
 
         customers = self._reader.read_entities(
-            attr="Customer_Name",
-            builder=lambda row: Customer(row["Customer_Name"])
+            get_keys=lambda row: f'{row["Customer_Name"]}_{row["Customer_Category"]}',
+            builder=lambda row, _: Customer(name=row["Customer_Name"], category=row["Customer_Category"])
         )
 
-
+        category = self._reader.read_entities(
+            get_keys=lambda row: row["Customer_Category"],
+            builder=lambda row, _: Category(row["Customer_Category"])
+        )
         """
 
         # read teams
@@ -98,6 +103,10 @@ class CSVtoXMLConverter:
         for produto in produtos.values():
             produto_el.append(produto.to_xml())
 
+        category_el = ET.Element("Customer_Category")
+        for category in category.values():
+            category_el.append(category.to_xml())
+
         customer_el = ET.Element("Customer_Name")
         for customer in customers.values():
             customer_el.append(customer.to_xml())
@@ -105,7 +114,7 @@ class CSVtoXMLConverter:
         root_el.append(produto_el)
         root_el.append(store_el)
         root_el.append(city_el)
-
+        root_el.append(category_el)
         root_el.append(customer_el)
 
         return root_el
@@ -114,4 +123,3 @@ class CSVtoXMLConverter:
         xml_str = ET.tostring(self.to_xml(), encoding='utf8', method='xml').decode()
         dom = md.parseString(xml_str)
         return dom.toprettyxml()
-
