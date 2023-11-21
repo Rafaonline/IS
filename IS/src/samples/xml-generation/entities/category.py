@@ -9,9 +9,9 @@ class Category:
         self._category = category
 
     def to_xml(self):
-        el = ET.Element("Customer_Name")
+        el = ET.Element("Customer_Category")
         el.set("id", str("cus") + str(self._id))
-        el.set("Customer_Category", self._category)
+        el.set("Category", self._category)
         return el
 
     def get_id(self):
