@@ -10,6 +10,7 @@ from entities.store import Store
 from entities.produto import Produto
 from entities.category import Category
 from entities.customer import Customer
+from entities.payment_method import Payment_Method
 """
 from entities.produtos import Produtos
 from entities.team import Team
@@ -36,58 +37,29 @@ class CSVtoXMLConverter:
             builder=lambda row, _: Store(row["Store_Type"])
         )
 
-        produtos = self._reader.read_entities(
+        # read products
+        products = self._reader.read_entities(
             builder=lambda row, key: Produto(key),
             get_keys=lambda row:  ast.literal_eval(row["Product"])
         )
 
+        # read customers
         customers = self._reader.read_entities(
             get_keys=lambda row: f'{row["Customer_Name"]}_{row["Customer_Category"]}',
             builder=lambda row, _: Customer(name=row["Customer_Name"], category=row["Customer_Category"])
         )
 
+        # read categories
         category = self._reader.read_entities(
             get_keys=lambda row: row["Customer_Category"],
             builder=lambda row, _: Category(row["Customer_Category"])
         )
-        """
 
-        # read teams
-        teams = self._reader.read_entities(
-            attr="Current Club",
-            builder=lambda row: Team(row["Current Club"])
+        # read payment method
+        payment_method = self._reader.read_entities(
+            get_keys=lambda row: row["Payment_Method"],
+            builder=lambda row, _: Payment_Method(row["Payment_Method"])
         )
-
-        # read players
-
-        def after_creating_player(player, row):
-            # add the player to the appropriate team
-            teams[row["Current Club"]].add_player(player)
-
-        self._reader.read_entities(
-            attr="full_name",
-            builder=lambda row: Player(
-                name=row["full_name"],
-                age=row["age"],
-                country=countries[row["nationality"]]
-            ),
-            after_create=after_creating_player
-        )
-
-        # generate the final xml
-        root_el = ET.Element("Football")
-
-        teams_el = ET.Element("Teams")
-        for team in teams.values():
-            teams_el.append(team.to_xml())
-
-        countries_el = ET.Element("Countries")
-        for country in countries.values():
-            countries_el.append(country.to_xml())
-
-        root_el.append(teams_el)
-        root_el.append(countries_el)
-"""
 
         root_el = ET.Element("Retail")
 
@@ -99,9 +71,9 @@ class CSVtoXMLConverter:
         for store in stores.values():
             store_el.append(store.to_xml())
 
-        produto_el = ET.Element("Product")
-        for produto in produtos.values():
-            produto_el.append(produto.to_xml())
+        products_el = ET.Element("Product")
+        for products in products.values():
+            products_el.append(products.to_xml())
 
         category_el = ET.Element("Customer_Category")
         for category in category.values():
@@ -111,11 +83,16 @@ class CSVtoXMLConverter:
         for customer in customers.values():
             customer_el.append(customer.to_xml())
 
-        root_el.append(produto_el)
+        payment_method_el = ET.Element("Payment_Method")
+        for payment_method in payment_method.values():
+            payment_method_el.append(payment_method.to_xml())
+
+        root_el.append(products_el)
         root_el.append(store_el)
         root_el.append(city_el)
         root_el.append(category_el)
         root_el.append(customer_el)
+        root_el.append(payment_method_el)
 
         return root_el
 
