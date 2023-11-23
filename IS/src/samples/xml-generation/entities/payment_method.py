@@ -10,7 +10,7 @@ class Payment_Method:
 
     def to_xml(self):
         el = ET.Element("Payment_Method")
-        el.set("id", str("s") + str(self._id))
+        el.set("id", str("p") + str(self._id))
         el.set("Method", self._method)
         return el
 

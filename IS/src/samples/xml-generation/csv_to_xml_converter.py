@@ -11,6 +11,7 @@ from entities.produto import Produto
 from entities.category import Category
 from entities.customer import Customer
 from entities.payment_method import Payment_Method
+from entities.transaction import Transaction
 """
 from entities.produtos import Produtos
 from entities.team import Team
@@ -33,8 +34,8 @@ class CSVtoXMLConverter:
 
         # read stores
         stores = self._reader.read_entities(
-            get_keys=lambda row: row["Store_Type"],
-            builder=lambda row, _: Store(row["Store_Type"])
+            get_keys=lambda row: f'{row["Store_Type"]}_{row["City"]}',
+            builder=lambda row, _: Store(name=row["Store_Type"], city=cities[row["City"]])
         )
 
         # read products
@@ -46,7 +47,7 @@ class CSVtoXMLConverter:
         # read customers
         customers = self._reader.read_entities(
             get_keys=lambda row: f'{row["Customer_Name"]}_{row["Customer_Category"]}',
-            builder=lambda row, _: Customer(name=row["Customer_Name"], category=row["Customer_Category"])
+            builder=lambda row, _: Customer(name=row["Customer_Name"], category=["Customer_Category"])
         )
 
         # read categories
@@ -59,6 +60,14 @@ class CSVtoXMLConverter:
         payment_method = self._reader.read_entities(
             get_keys=lambda row: row["Payment_Method"],
             builder=lambda row, _: Payment_Method(row["Payment_Method"])
+        )
+
+        # read transaction
+        transaction = self._reader.read_entities(
+            get_keys=lambda row: f'{row["Date"]}_{row["Customer_Name"]}',
+            builder=lambda row, _: Transaction(date=row["Date"], customer=["Customer_Name"], product=row["Product"],
+                                               total_items=row["Total_Items"], value=row["Total_Cost"],
+                                               payment_method=row["Payment_Method"], store=row["Store_Type"])
         )
 
         root_el = ET.Element("Retail")
@@ -87,12 +96,17 @@ class CSVtoXMLConverter:
         for payment_method in payment_method.values():
             payment_method_el.append(payment_method.to_xml())
 
+        transaction_el = ET.Element("Transaction")
+        for transaction in transaction.values():
+            transaction_el.append(transaction.to_xml())
+
         root_el.append(products_el)
         root_el.append(store_el)
         root_el.append(city_el)
         root_el.append(category_el)
         root_el.append(customer_el)
         root_el.append(payment_method_el)
+        root_el.append(transaction_el)
 
         return root_el
 
