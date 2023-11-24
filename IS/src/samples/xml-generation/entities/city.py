@@ -8,15 +8,14 @@ class City:
         self._id = City.counter
         self._name = name
 
-
     def to_xml(self):
         el = ET.Element("City")
-        el.set("id", str("c") + str(self._id))
+        el.set("id", self.get_id())
         el.set("name", self._name)
         return el
 
     def get_id(self):
-        return self._id
+        return str("c") + str(self._id)
 
     def __str__(self):
         return f"name: {self._name}, id:{self._id}"

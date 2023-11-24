@@ -3,32 +3,64 @@ import xml.etree.ElementTree as ET
 
 class Transaction:
 
-    def __init__(self, date, customer, product, total_items, value, payment_method, store):
+    def __init__(self, date, customer, products, total_items, value, payment_method, store, discount, season, promotion):
         Transaction.counter += 1
         self._id = Transaction.counter
         self._date = date
         self._customer = customer
-        self._product = product
+        self._products = products
         self._total_items = total_items
         self._value = value
         self._payment_method = payment_method
         self._store = store
+        self._discount = discount
+        self._season = season
+        self._promotion = promotion
 
     def to_xml(self):
-        el = ET.Element("Transaction")
-        el.set("id", str("tr") + str(self._id))
-        el.set("Date", self._date)
-        el.set("Customer", self._customer)
-        el.set("Product", self._product)
-        el.set("Total_Items", self._total_items)
-        el.set("Value", self._value)
-        el.set("Payment_Method", self._payment_method)
-        el.set("Store", self._store)
+        transaction_el = ET.Element("Transaction")
+        transaction_el.set("ID", self.get_id())
+        transaction_el.set("Date", self._date)
 
-        return el
+        store_el = ET.Element("Store")
+        store_el.append(self._store.to_xml())
+        transaction_el.append(store_el)
+
+        costumer_el = ET.Element("Customer")
+        costumer_el.append(self._customer.to_xml())
+        transaction_el.append(costumer_el)
+
+        buy_el = ET.Element("Products")
+        buy_el.set("Total_Items", self._total_items)
+        for product in self._products:
+            buy_el.append(product.to_xml())
+        transaction_el.append(buy_el)
+
+        payment_el = ET.Element("Payment")
+        payment_el.set("Method", self._payment_method)
+        payment_el.set("Value", self._value)
+        transaction_el.append(payment_el)
+
+        details_el = ET.Element("Details")
+
+        discount_el = ET.Element("Discount")
+        discount_el.text = self._discount
+        details_el.append(discount_el)
+
+        season_el = ET.Element("Season")
+        season_el.text = self._season
+        details_el.append(season_el)
+
+        promotion_el = ET.Element("Promotion")
+        promotion_el.text = self._promotion
+        details_el.append(promotion_el)
+
+        transaction_el.append(details_el)
+
+        return transaction_el
 
     def get_id(self):
-        return self._id
+        return str("tr") + str(self._id)
 
     def __str__(self):
         return f"date: {self._date}, id:{self._id}, customer:{self._customer}"
