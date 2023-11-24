@@ -8,9 +8,7 @@ from csv_reader import CSVReader
 from entities.city import City
 from entities.store import Store
 from entities.produto import Product
-from entities.category import Category
 from entities.customer import Customer
-from entities.payment_method import Payment_Method
 from entities.transaction import Transaction
 """
 from entities.produtos import Produtos
@@ -50,18 +48,6 @@ class CSVtoXMLConverter:
             builder=lambda row, _: Customer(name=row["Customer_Name"], category=row["Customer_Category"])
         )
 
-        # read categories
-        category = self._reader.read_entities(
-            get_keys=lambda row: row["Customer_Category"],
-            builder=lambda row, _: Category(row["Customer_Category"])
-        )
-
-        # read payment method
-        payment_method = self._reader.read_entities(
-            get_keys=lambda row: row["Payment_Method"],
-            builder=lambda row, _: Payment_Method(row["Payment_Method"])
-        )
-
         # read transaction
         transaction = self._reader.read_entities(
             get_keys=lambda row: row["Transaction_ID"],
@@ -80,41 +66,31 @@ class CSVtoXMLConverter:
 
         root_el = ET.Element("Retail")
 
-        city_el = ET.Element("City")
+        city_el = ET.Element("Cities")
         for city in cities.values():
             city_el.append(city.to_xml())
 
-        store_el = ET.Element("Store_Type")
+        store_el = ET.Element("Store_Types")
         for store in stores.values():
             store_el.append(store.to_xml())
 
-        products_el = ET.Element("Product")
+        products_el = ET.Element("Products")
         for products in products.values():
             products_el.append(products.to_xml())
 
-        category_el = ET.Element("Customer_Category")
-        for category in category.values():
-            category_el.append(category.to_xml())
-
-        customer_el = ET.Element("Customer_Name")
+        customer_el = ET.Element("Customers")
         for customer in customers.values():
             customer_el.append(customer.to_xml())
 
-        payment_method_el = ET.Element("Payment_Method")
-        for payment_method in payment_method.values():
-            payment_method_el.append(payment_method.to_xml())
-
-        transaction_el = ET.Element("Transaction")
+        transaction_el = ET.Element("Transactions")
         for transaction in transaction.values():
             transaction_el.append(transaction.to_xml())
 
         #root_el.append(products_el)
         #root_el.append(store_el)
         #root_el.append(city_el)
-        #root_el.append(category_el)
         #root_el.append(customer_el)
-        #root_el.append(payment_method_el)
-        root_el.append(transaction_el)
+        #root_el.append(transaction_el)
 
         return root_el
 
