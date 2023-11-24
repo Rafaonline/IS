@@ -1,4 +1,3 @@
-import csv
 import xml.dom.minidom as md
 import xml.etree.ElementTree as ET
 import ast
@@ -10,11 +9,6 @@ from entities.store import Store
 from entities.produto import Product
 from entities.customer import Customer
 from entities.transaction import Transaction
-"""
-from entities.produtos import Produtos
-from entities.team import Team
-from entities.player import Player
-"""
 
 
 class CSVtoXMLConverter:
