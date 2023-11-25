@@ -15,3 +15,6 @@ CREATE TABLE public.teachers (
 
 INSERT INTO teachers(name, city) VALUES('Luís Teófilo', 'Porto');
 INSERT INTO teachers(name, city) VALUES('Jorge Ribeiro', 'Braga');
+
+ALTER TABLE imported_documents
+ADD COLUMN is_deleted BOOLEAN DEFAULT false;

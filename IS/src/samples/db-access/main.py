@@ -23,10 +23,21 @@ class DatabaseConnection:
         except Exception as exception:
             print("Error inserting document: ", exception)
 
-        finally:
-            if self.connection:
-                self.cursor.close()
-                self.connection.close()
+    def soft_delete_xml_document(self, file_name):
+        try:
+            self.cursor.execute(
+                "UPDATE imported_documents SET is_deleted = True WHERE file_name = %s",
+                (file_name,)
+            )
+            self.connection.commit()
+            print("Document deleted successfully!")
+        except Exception as exception:
+            print("Error deleting document: ", exception)
+
+    def close_connection(self):
+        if self.connection:
+            self.cursor.close()
+            self.connection.close()
 
 
 # Assuming you have the XML content and file name ready
@@ -39,6 +50,9 @@ db_connection = DatabaseConnection()
 
 try:
     # Insert XML document into the database
-    db_connection.insert_xml_document(file_name, xml)
+    db_connection.soft_delete_xml_document(file_name)
 except Exception as error:
     print("Failed to insert data", error)
+
+finally:
+    db_connection.close_connection()
