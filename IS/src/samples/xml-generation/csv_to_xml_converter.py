@@ -80,11 +80,11 @@ class CSVtoXMLConverter:
         for transaction in transaction.values():
             transaction_el.append(transaction.to_xml())
 
+        #root_el.append(transaction_el)
         #root_el.append(products_el)
         #root_el.append(store_el)
         #root_el.append(city_el)
-        #root_el.append(customer_el)
-        #root_el.append(transaction_el)
+        root_el.append(customer_el)
 
         return root_el
 
