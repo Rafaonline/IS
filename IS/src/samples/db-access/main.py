@@ -11,11 +11,12 @@ try:
                                   database="is")
 
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM teachers")
 
-    print("Teachers list:")
-    for teacher in cursor:
-        print(f" > {teacher[0]}, from {teacher[1]}")
+    cursor.execute("SELECT * FROM imported_documents")
+
+    print("DOcs list:")
+    for docs in cursor:
+        print(f" > {docs[0]}, from {docs[1]}")
 
 except (Exception, psycopg2.Error) as error:
     print("Failed to fetch data", error)

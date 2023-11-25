@@ -23,18 +23,20 @@ class Transaction:
         transaction_el.set("Date", self._date)
 
         store_el = ET.Element("Store")
-        store_el.append(self._store.to_xml())
+        store_el.set("ID", self._store.get_id())
         transaction_el.append(store_el)
 
         costumer_el = ET.Element("Customer")
-        costumer_el.append(self._customer.to_xml())
+        costumer_el.set("ID", self._customer.get_id())
         transaction_el.append(costumer_el)
 
-        buy_el = ET.Element("Products")
-        buy_el.set("Total_Items", self._total_items)
+        products_el = ET.Element("Products")
+        products_el.set("Total_Items", self._total_items)
         for product in self._products:
-            buy_el.append(product.to_xml())
-        transaction_el.append(buy_el)
+            product_el = ET.Element("Product", id=product.get_id())
+            products_el.append(product_el)
+
+        transaction_el.append(products_el)
 
         payment_el = ET.Element("Payment")
         payment_el.set("Method", self._payment_method)
@@ -58,6 +60,7 @@ class Transaction:
         transaction_el.append(details_el)
 
         return transaction_el
+
 
     def get_id(self):
         return str("tr") + str(self._id)

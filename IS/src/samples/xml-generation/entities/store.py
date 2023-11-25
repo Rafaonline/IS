@@ -18,7 +18,7 @@ class Store:
         store_el.append(name_el)
 
         city_el = ET.Element("City")
-        city_el.text = self._city_ref
+        city_el.text = self._city_ref.get_id()
         store_el.append(city_el)
 
         return store_el

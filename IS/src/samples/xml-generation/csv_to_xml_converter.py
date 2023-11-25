@@ -27,7 +27,7 @@ class CSVtoXMLConverter:
         # read stores
         stores = self._reader.read_entities(
             get_keys=lambda row: f'{row["Store_Type"]}_{row["City"]}',
-            builder=lambda row, _: Store(name=row["Store_Type"], city=row["City"])
+            builder=lambda row, _: Store(name=row["Store_Type"], city=cities[row["City"]])
         )
 
         # read products
@@ -84,13 +84,17 @@ class CSVtoXMLConverter:
         #root_el.append(store_el)
         #root_el.append(city_el)
         #root_el.append(customer_el)
-        root_el.append(transaction_el)
+        #root_el.append(transaction_el)
 
         return root_el
 
+    def to_xml_str(self):
+        xml_str = ET.tostring(self.to_xml(), encoding='utf8', method='xml').decode()
+        dom = md.parseString(xml_str)
+        return dom.toprettyxml()
+
     def to_xml_file(self, filename='retail.xml'):
         root_el = self.to_xml()
-        tree = ET.ElementTree(root_el)
         xml_str = ET.tostring(root_el, encoding='utf-8').decode('utf-8')
         dom = md.parseString(xml_str)
 
