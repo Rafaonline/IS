@@ -12,7 +12,7 @@ try:
 
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM imported_documents")
+    cursor.execute("SELECT * FROM teachers")
 
     print("DOcs list:")
     for docs in cursor:
@@ -25,3 +25,5 @@ finally:
     if connection:
         cursor.close()
         connection.close()
+
+
