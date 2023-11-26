@@ -1,105 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Retail">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Transaction">
+        <xs:element name="Transactions">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Store">
-                <xs:complexType>
-                  <xs:attribute name="ID" type="xs:string" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Customer">
-                <xs:complexType>
-                  <xs:attribute name="ID" type="xs:string" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Products">
+              <xs:element name="Transaction" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="Product">
+                    <xs:element name="Store">
                       <xs:complexType>
-                        <xs:attribute name="id" type="xs:string" use="required" />
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="ID" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Customer">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="ID" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Products">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Product" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="id" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:byte" name="Total_Items" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Payment">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="Method" use="optional"/>
+                            <xs:attribute type="xs:float" name="Value" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Details">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="Discount"/>
+                          <xs:element type="xs:string" name="Season"/>
+                          <xs:element type="xs:string" name="Promotion"/>
+                        </xs:sequence>
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="Total_Items" type="xs:unsignedByte" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Payment">
-                <xs:complexType>
-                  <xs:attribute name="Method" type="xs:string" use="required" />
-                  <xs:attribute name="Value" type="xs:decimal" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Details">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Discount" type="xs:string" />
-                    <xs:element name="Season" type="xs:string" />
-                    <xs:element name="Promotion" type="xs:string" />
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="ID" type="xs:string" use="required" />
-            <xs:attribute name="Date" type="xs:string" use="required" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Products">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="Product">
-                <xs:complexType>
-                  <xs:attribute name="id" type="xs:string" use="required" />
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Store_Types">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="Store">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Type" type="xs:string" />
-                    <xs:element name="City" type="xs:string" />
-                  </xs:sequence>
-                  <xs:attribute name="ID" type="xs:string" use="required" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Cities">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="City">
-                <xs:complexType>
-                  <xs:attribute name="id" type="xs:string" use="required" />
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="latitude" type="xs:decimal" use="required" />
-                  <xs:attribute name="longitude" type="xs:decimal" use="required" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Customers">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Customer">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Name" type="xs:string" />
-                    <xs:element name="Category" type="xs:string" />
-                  </xs:sequence>
-                  <xs:attribute name="ID" type="xs:string" use="required" />
+                  <xs:attribute type="xs:string" name="ID" use="optional"/>
+                  <xs:attribute type="xs:string" name="Date" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
