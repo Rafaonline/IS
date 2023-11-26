@@ -95,7 +95,7 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
     server.register_function(string_reverse)
     server.register_function(string_length)
     server.register_function(search_tr_by_product, 'search_tr_by_product')
-    server.register_function(execute_query, 'execute_query')
+    server.register_function(execute_query)
 
     # start the server
     print("Starting the RPC Server...")
