@@ -5,66 +5,50 @@ print("connecting to server...")
 server = xmlrpc.client.ServerProxy('http://is-rpc-server:9000')
 
 
-def menu():
-    print("1-Consultar")
-    print("2-Pesquisar")
-    print("3-Sair")
 
-def consultar():
-    print("1-Lojas")
-    print("2-Cidades")
-    print("3-Tipos de loja")
-    print("4-Categoria de clientes")
-    print("5-Voltar")
-
-def pesquisar():
-    print("1- Id de transacao")
-    print("2- Estacao do ano")
-    print("3- Cidade da loja")
-    print("4- Voltar")
-
-
+def print_options():
+    print("Options:")
+    print("1 - STR reverse/ search tr by product")
+    print("2 - STR length")
+    print("0 - Exit")
 
 
 while True:
-    menu()
+    print_options()
+    choice = input("Enter your choice (0 to exit): ")
+    string = "hello world"
 
-    escolha = input("Escolha a opcao: ")
+    if choice == "1":
+        product_name = input("Enter a product name: ")
+        product_id_query = (f"SELECT xpath('//Products/Product[@name=\"{product_name}\"]/@id', xml) "
+                            f"FROM public.imported_documents;")
+        product_id_result = server.execute_query(product_id_query)
+        product_id = product_id_result[0]
 
-    if escolha == "1":
-        consultar()
-        escolha_consulta = input("Escolha a opcao")
+        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]/@ID', xml) "
+                             f"FROM public.imported_documents;")
+        transaction_id_result = server.execute_query(transaction_query)
 
-        if escolha_consulta == "1":
-            """
-            # Chamar a função remota para consultar lojas
-            lojas = server.consultar_lojas()
+        if transaction_id_result:
 
-            # Exibir as informações das lojas
-            if lojas:
-                for loja in lojas:
-                    print(f"ID da Transação: {loja['transaction_id']}, ID da Loja: {loja['store_id']}")
-            else:
-                print("Nenhuma loja encontrada.")
-            """
-        #if escolha_consulta == "2":
+            for transaction_id_list in transaction_id_result:
+                transaction_id = transaction_id_list[0]
 
-        #if escolha_consulta == "3":
+                # Remover os caracteres especiais e quebras de linha do início e do final da string
+                transaction_id = transaction_id.strip('{}').replace(',', '\n')
 
-        #if escolha_consulta == "4":
+                print("\nTransactions ID:")
+                print()
+                print(transaction_id)
+        else:
+            print("There aren't any transactions id refering this product.")
 
-        if escolha_consulta == "5":
-            menu()
+        print(f" > {server.string_reverse(string)}")
+    elif choice == "2":
+        print(f" > {server.string_length(string)}")
+    elif choice == "0":
+        print("Exiting...")
+        break
+    else:
+        print("Invalid choice. Please try again.")
 
-    elif escolha == "2":
-        pesquisar()
-        escolha_pesquisa = input("Escolha a opcao")
-
-        #if escolha_pesquisa == "1":
-
-       # if escolha_pesquisa == "2":
-
-        #if escolha_pesquisa == "3":
-
-        if escolha_pesquisa == "4":
-            menu()

@@ -39,20 +39,3 @@ class DatabaseConnection:
             self.cursor.close()
             self.connection.close()
 
-
-# Assuming you have the XML content and file name ready
-with open("/data/retail.xml", "r", encoding="utf-8") as file:
-    xml = file.read()
-file_name = "retail5.xml"
-
-# Create an instance of the DatabaseConnection class
-db_connection = DatabaseConnection()
-
-try:
-    # Insert XML document into the database
-    db_connection.soft_delete_xml_document(file_name)
-except Exception as error:
-    print("Failed to insert data", error)
-
-finally:
-    db_connection.close_connection()

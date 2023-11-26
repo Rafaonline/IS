@@ -1,36 +1,77 @@
 import signal, sys
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
-import xml.etree.ElementTree as ET
+
 from functions.string_length import string_length
 from functions.string_reverse import string_reverse
+import psycopg2
 
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
-"""
-def consultar_lojas():
-    idloja = '/data/retail.xml'
-    lojas = lojasxml(idloja)
 
-    return lojas
+def search_tr_by_product(product_name):
+    try:
+        # Connect to the database
+        connection = psycopg2.connect(user="is", password="is", host="is-db", port="5432", database="is")
+        cursor = connection.cursor()
 
-def lojasxml(idloja):
-    tree = ET.parse(idloja)
-    root = tree.getroot()
+        # Execute the XML query to find Product ID based on the product name
+        product_id_query = (f"SELECT xpath('//Products/Product[@name=\"{product_name}\"]/@id', xml) "
+                            f"FROM public.imported_documents;")
+        cursor.execute(product_id_query)
+        product_id_result = cursor.fetchone()
 
-    lojas = []
+        if not product_id_result:
+            return f"Product with name '{product_name}' not found."
 
-    for transaction_elem in root.findall('.//Transaction'):
-        transaction_id = transaction_elem.get('ID')
-        store_elem = transaction_elem.find('./Store')
-        store_id = store_elem.get('ID') if store_elem is not None else None
+        product_id = product_id_result[0]
 
-        if store_id is not None:
-            lojas.append({'transaction_id': transaction_id, 'store_id': store_id})
+        # Execute the XML query to find transactions with the obtained Product ID
+        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]/@ID', xml)"
+                             f"FROM public.imported_documents;")
+        cursor.execute(transaction_query)
+        transaction_result = cursor.fetchall()
 
-    return lojas
-"""
+        # Close the database connection
+        connection.close()
+
+        return transaction_result
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+def execute_query(query):
+    connection = None
+    cursor = None
+
+    try:
+        # Establish a database connection
+        connection = psycopg2.connect(
+            user="is",
+            password="is",
+            host="is-db",
+            port="5432",
+            database="is"
+        )
+        cursor = connection.cursor()
+
+        # Execute the query
+        cursor.execute(query)
+        result = cursor.fetchall()
+        connection.commit()
+
+        return result
+
+    except Exception as e:
+        return f"Error executing query: {str(e)}"
+
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as server:
     server.register_introspection_functions()
 
@@ -53,6 +94,8 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
     # register both functions
     server.register_function(string_reverse)
     server.register_function(string_length)
+    server.register_function(search_tr_by_product, 'search_tr_by_product')
+    server.register_function(execute_query, 'execute_query')
 
     # start the server
     print("Starting the RPC Server...")
