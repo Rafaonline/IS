@@ -20,14 +20,7 @@ while True:
 
     if choice == "1":
         product_name = input("Enter a product name: ")
-        product_id_query = (f"SELECT xpath('//Products/Product[@name=\"{product_name}\"]/@id', xml) "
-                            f"FROM public.imported_documents;")
-        product_id_result = server.execute_query(product_id_query)
-        product_id = product_id_result[0]
-
-        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]/@ID', xml) "
-                             f"FROM public.imported_documents;")
-        transaction_id_result = server.execute_query(transaction_query)
+        transaction_id_result = server.get_tr_id_by_prod_name(product_name)
 
         if transaction_id_result:
 

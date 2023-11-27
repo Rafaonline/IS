@@ -43,35 +43,6 @@ def search_tr_by_product(product_name):
         return f"Error: {str(e)}"
 
 
-def execute_query(query):
-    connection = None
-    cursor = None
-
-    try:
-        # Establish a database connection
-        connection = psycopg2.connect(
-            user="is",
-            password="is",
-            host="is-db",
-            port="5432",
-            database="is"
-        )
-        cursor = connection.cursor()
-
-        # Execute the query
-        cursor.execute(query)
-        result = cursor.fetchall()
-        connection.commit()
-
-        return result
-
-    except Exception as e:
-        return f"Error executing query: {str(e)}"
-
-    finally:
-        if connection:
-            cursor.close()
-            connection.close()
 
 
 with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as server:
@@ -97,7 +68,6 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
     server.register_function(string_reverse)
     server.register_function(string_length)
     server.register_function(search_tr_by_product, 'search_tr_by_product')
-    server.register_function(execute_query)
 
     # start the server
     print("Starting the RPC Server...")
