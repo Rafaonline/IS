@@ -2,7 +2,6 @@ import json
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-import xml.dom.minidom as md
 
 
 class City:
@@ -33,17 +32,28 @@ class City:
                 self._longitude = location.get("lon")
 
     def to_xml(self):
-        el = ET.Element("City")
-        el.set("id", self.get_id())
-        el.set("name", self._name)
-        el.set("latitude", self._latitude)
-        el.set("longitude", self._longitude)
-        return el
+        city_el = ET.Element("City")
+        city_el.set("id", self.get_id())
+
+        name_el = ET.Element("Name")
+        name_el.text = self._name
+        city_el.append(name_el)
+
+        lat_el = ET.Element("Latitude")
+        lat_el.text = self._latitude
+        city_el.append(lat_el)
+
+        lon_el = ET.Element("Longitude")
+        lon_el.text = self._longitude
+        city_el.append(lon_el)
+
+        return city_el
 
     def get_id(self):
         return str("c") + str(self._id)
 
     def __str__(self):
         return f"name: {self._name}, id:{self._id}"
+
 
 City.counter = 0

@@ -61,7 +61,6 @@ class Transaction:
 
         return transaction_el
 
-
     def get_id(self):
         return str("tr") + str(self._id)
 

@@ -10,6 +10,7 @@ import psycopg2
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
+
 def search_tr_by_product(product_name):
     try:
         # Connect to the database
@@ -40,6 +41,7 @@ def search_tr_by_product(product_name):
 
     except Exception as e:
         return f"Error: {str(e)}"
+
 
 def execute_query(query):
     connection = None
