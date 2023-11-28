@@ -43,8 +43,6 @@ def search_tr_by_product(product_name):
         return f"Error: {str(e)}"
 
 
-
-
 with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as server:
     server.register_introspection_functions()
 

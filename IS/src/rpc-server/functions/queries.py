@@ -1,5 +1,6 @@
 import psycopg2
 
+
 class Queries:
 
     def execute_query(self, query):
@@ -39,16 +40,15 @@ class Queries:
         product_id_result = self.execute_query(product_id_query)
         product_id = product_id_result[0]
 
-        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]/@ID', xml) "
+        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]', xml) "
                              f"FROM public.imported_documents;")
         transaction_id_result = self.execute_query(transaction_query)
 
         return transaction_id_result
 
-    def get_compras(self, id_client):
+    def get_purchases(self, id_client):
         transaction_query = (
-            f"SELECT * FROM public.imported_documents "
-            f"WHERE xpath('//Transaction[Customer[@ID=\"{id_client}\"]]', xml, ARRAY[]::text[]) IS NOT NULL;"
+            f"SELECT xpath('//Transaction[Customer[@ID=\"{id_client}\"]]', xml) FROM public.imported_documents "
         )
-        compras_client = self.execute_query(transaction_query)
-        return compras_client
+        purchases_client = self.execute_query(transaction_query)
+        return purchases_client

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e8c33124-0793-40b6-9d2d-ab4e095b195c/console.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/IS/docker/images/db/schema.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/IS/src/samples/db-access/main.py" dialect="GenericSQL" />
+    <file url="PROJECT" dialect="GenericSQL" />
   </component>
 </project>
