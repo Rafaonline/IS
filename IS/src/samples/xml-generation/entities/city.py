@@ -34,10 +34,7 @@ class City:
     def to_xml(self):
         city_el = ET.Element("City")
         city_el.set("id", self.get_id())
-
-        name_el = ET.Element("Name")
-        name_el.text = self._name
-        city_el.append(name_el)
+        city_el.set("name", self._name)
 
         lat_el = ET.Element("Latitude")
         lat_el.text = self._latitude

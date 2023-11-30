@@ -7,7 +7,7 @@
         <xs:element name="Transactions">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Transaction">
+              <xs:element maxOccurs="unbounded" name="Transaction">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Store">
@@ -70,11 +70,15 @@
         <xs:element name="Store_Types">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Store">
+              <xs:element maxOccurs="unbounded" name="Store">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Type" type="xs:string" />
-                    <xs:element name="City" type="xs:string" />
+                    <xs:element name="City">
+                      <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
                   </xs:sequence>
                   <xs:attribute name="ID" type="xs:string" use="required" />
                 </xs:complexType>
@@ -85,14 +89,14 @@
         <xs:element name="Cities">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="City">
+              <xs:element maxOccurs="unbounded" name="City">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Name" type="xs:string" />
                     <xs:element name="Latitude" type="xs:decimal" />
                     <xs:element name="Longitude" type="xs:decimal" />
                   </xs:sequence>
                   <xs:attribute name="id" type="xs:string" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
@@ -101,7 +105,7 @@
         <xs:element name="Customers">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Customer">
+              <xs:element maxOccurs="unbounded" name="Customer">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Name" type="xs:string" />

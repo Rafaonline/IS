@@ -1,6 +1,6 @@
 import xml.dom.minidom as md
-import xml.etree.ElementTree as ET
-import xml.etree as etree
+import xml.etree.ElementTree as et
+import xmlschema
 import ast
 
 from csv_reader import CSVReader
@@ -28,7 +28,7 @@ class CSVtoXMLConverter:
         # read stores
         stores = self._reader.read_entities(
             get_keys=lambda row: f'{row["Store_Type"]}_{row["City"]}',
-            builder=lambda row, _: Store(name=row["Store_Type"], city=cities[row["City"]])
+            builder=lambda row, _: Store(type=row["Store_Type"], city=cities[row["City"]])
         )
 
         # read products
@@ -59,25 +59,25 @@ class CSVtoXMLConverter:
                                                )
         )
 
-        root_el = ET.Element("Retail")
+        root_el = et.Element("Retail")
 
-        city_el = ET.Element("Cities")
+        city_el = et.Element("Cities")
         for city in cities.values():
             city_el.append(city.to_xml())
 
-        store_el = ET.Element("Store_Types")
+        store_el = et.Element("Store_Types")
         for store in stores.values():
             store_el.append(store.to_xml())
 
-        products_el = ET.Element("Products")
+        products_el = et.Element("Products")
         for products in products.values():
             products_el.append(products.to_xml())
 
-        customer_el = ET.Element("Customers")
+        customer_el = et.Element("Customers")
         for customer in customers.values():
             customer_el.append(customer.to_xml())
 
-        transaction_el = ET.Element("Transactions")
+        transaction_el = et.Element("Transactions")
         for transaction in transaction.values():
             transaction_el.append(transaction.to_xml())
 
@@ -90,29 +90,22 @@ class CSVtoXMLConverter:
         return root_el
 
     def to_xml_str(self):
-        xml_str = ET.tostring(self.to_xml(), encoding='utf8', method='xml').decode()
+        xml_str = et.tostring(self.to_xml(), encoding='utf8', method='xml').decode()
         dom = md.parseString(xml_str)
         return dom.toprettyxml()
 
     def to_xml_file(self):
         filename = '/data/retail.xml'
         root_el = self.to_xml()
-        xml_str = ET.tostring(root_el, encoding='utf-8').decode('utf-8')
+        xml_str = et.tostring(root_el, encoding='utf-8').decode('utf-8')
         dom = md.parseString(xml_str)
 
         with open(filename, 'w', encoding='utf-8') as xml_file:
             xml_file.write(dom.toprettyxml(indent='\t'))
 
-    def validate_xml(self, xml_str, xsd_file):
+    def validate_xml(self, xsd_file, xml_file):
 
-        try:
-            xsd_tree = ET.parse(xsd_file)
-            schema = etree.XMLSchema(xsd_tree)
-            xml_doc = ET.fromstring(xml_str)
-            schema.assertValid(xml_doc)
-            return True
-        except etree.DocumentINvalid as e:
-            print("Error", e)
-            return False
+        schema = xmlschema.XMLSchema('/data/schema.xsd')
+        schema.validate('/data/retail.xml')
 
 
