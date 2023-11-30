@@ -1,5 +1,6 @@
 import xml.dom.minidom as md
 import xml.etree.ElementTree as ET
+import xml.etree as etree
 import ast
 
 from csv_reader import CSVReader
@@ -101,4 +102,17 @@ class CSVtoXMLConverter:
 
         with open(filename, 'w', encoding='utf-8') as xml_file:
             xml_file.write(dom.toprettyxml(indent='\t'))
+
+    def validate_xml(self, xml_str, xsd_file):
+
+        try:
+            xsd_tree = ET.parse(xsd_file)
+            schema = etree.XMLSchema(xsd_tree)
+            xml_doc = ET.fromstring(xml_str)
+            schema.assertValid(xml_doc)
+            return True
+        except etree.DocumentINvalid as e:
+            print("Error", e)
+            return False
+
 

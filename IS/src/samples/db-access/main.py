@@ -1,41 +1,26 @@
 import psycopg2
 
+connection = None
+cursor = None
 
-class DatabaseConnection:
-    def __init__(self):
-        self.connection = psycopg2.connect(
-            user="is",
-            password="is",
-            host="is-db",
-            port="5432",
-            database="is"
-        )
-        self.cursor = self.connection.cursor()
+try:
+    connection = psycopg2.connect(user="is",
+                                  password="is",
+                                  host="is-db",
+                                  port="5432",
+                                  database="is")
 
-    def insert_xml_document(self, file_name, xml):
-        try:
-            self.cursor.execute(
-                "INSERT INTO imported_documents (file_name, xml) VALUES (%s, %s)",
-                (file_name, xml)
-            )
-            self.connection.commit()
-            print("Document inserted successfully!")
-        except Exception as exception:
-            print("Error inserting document: ", exception)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM teachers")
 
-    def soft_delete_xml_document(self, file_name):
-        try:
-            self.cursor.execute(
-                "UPDATE imported_documents SET is_deleted = True WHERE file_name = %s",
-                (file_name,)
-            )
-            self.connection.commit()
-            print("Document deleted successfully!")
-        except Exception as exception:
-            print("Error deleting document: ", exception)
+    print("Teachers list:")
+    for teacher in cursor:
+        print(f" > {teacher[0]}, from {teacher[1]}")
 
-    def close_connection(self):
-        if self.connection:
-            self.cursor.close()
-            self.connection.close()
+except (Exception, psycopg2.Error) as error:
+    print("Failed to fetch data", error)
 
+finally:
+    if connection:
+        cursor.close()
+        connection.close()

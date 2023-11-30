@@ -42,13 +42,49 @@ class Queries:
 
         transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]', xml) "
                              f"FROM public.imported_documents;")
-        transaction_id_result = self.execute_query(transaction_query)
+        result = self.execute_query(transaction_query)
 
-        return transaction_id_result
+        return result
 
-    def get_purchases(self, id_client):
-        transaction_query = (
-            f"SELECT xpath('//Transaction[Customer[@ID=\"{id_client}\"]]', xml) FROM public.imported_documents "
-        )
-        purchases_client = self.execute_query(transaction_query)
-        return purchases_client
+    def get_tr_by_cus_id(self, id_client):
+        query = (f"SELECT xpath('//Transaction[Customer[@ID=\"{id_client}\"]]', xml) "
+                 f"FROM public.imported_documents ")
+        result = self.execute_query(query)
+
+        return result
+
+    def order_tr_by_payment(self):
+        query = (f"SELECT unnest(xpath('//Transaction/@ID', xml))::text as transaction_id, "
+                 f"unnest(xpath('//Transaction/Payment/@Value', xml))::text as payment_value "
+                 f"FROM imported_documents "
+                 f"ORDER BY CAST(unnest(xpath('//Transaction/Payment/@Value', xml))::text AS DECIMAL);")
+        result = self.execute_query(query)
+
+        return result
+
+    def group_tr_by_store_id(self):
+        query = (f"SELECT unnest(xpath('//Transaction/Store/@ID', xml))::text as store_id, "
+                 f"COUNT(*) as number_of_transactions FROM imported_documents "
+                 f"GROUP BY store_id "
+                 f"ORDER BY number_of_transactions; ")
+        result = self.execute_query(query)
+
+        return result
+
+    def insert_xml_document(self, file_name, xml):
+        try:
+            query = f"INSERT INTO imported_documents (file_name, xml) VALUES ({file_name}, {xml})"
+            self.execute_query(query)
+            print("Document inserted successfully!")
+
+        except Exception as exception:
+            print("Error inserting document: ", exception)
+
+    def soft_delete_xml_document(self, file_name):
+        try:
+            query = f"UPDATE imported_documents SET is_deleted = True WHERE file_name = {file_name}"
+            self.execute_query(query)
+            print("Document deleted successfully!")
+
+        except Exception as exception:
+            print("Error deleting document: ", exception)
