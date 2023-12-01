@@ -12,7 +12,6 @@ try:
 
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM teachers")
-
     print("Teachers list:")
     for teacher in cursor:
         print(f" > {teacher[0]}, from {teacher[1]}")

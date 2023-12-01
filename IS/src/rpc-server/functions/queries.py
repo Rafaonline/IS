@@ -71,6 +71,17 @@ class Queries:
 
         return result
 
+    def get_city_by_store_id(self, store_id):
+        query = (f"SELECT unnest(xpath('//Store_Types/Store[@ID=\"{store_id}\"]/@ID', xml))::text AS StoreID, "
+                 f"unnest(xpath('//Store_Types/Store[@ID=\"{store_id}\"]/Type/text()', xml))::text AS StoreType, "
+                 f"unnest(xpath('//Cities/City[@id=//Store_Types/Store[@ID=\"{store_id}\"]/City/@id]/@name', xml)) AS CityName, "
+                 f"unnest(xpath('//Cities/City[@id=//Store_Types/Store[@ID=\"{store_id}\"]/City/@id]/Latitude/text()', xml))::text AS Latitude, "
+                 f"unnest(xpath('//Cities/City[@id=//Store_Types/Store[@ID=\"{store_id}\"]/City/@id]/Longitude/text()', xml))::text AS Longitude "
+                 f"FROM public.imported_documents; ")
+        result = self.execute_query(query)
+
+        return result
+
     def insert_xml_document(self, file_name, xml):
         try:
             query = f"INSERT INTO imported_documents (file_name, xml) VALUES ({file_name}, {xml})"
