@@ -1,15 +1,15 @@
-import signal, sys
-from xmlrpc.server import SimpleXMLRPCServer
+import signal
+import sys
 from xmlrpc.server import SimpleXMLRPCRequestHandler
-
-from functions.string_length import string_length
-from functions.string_reverse import string_reverse
-from functions.queries import Queries
-from functions.csv_to_xml_converter import CSVtoXMLConverter
-
-from db.db_conn import DatabaseConnection
+from xmlrpc.server import SimpleXMLRPCServer
 
 import xmlschema
+
+from db.db_conn import DatabaseConnection
+from functions.csv_to_xml_converter import CSVtoXMLConverter
+from functions.queries import Queries
+from functions.string_length import string_length
+from functions.string_reverse import string_reverse
 
 
 class RequestHandler(SimpleXMLRPCRequestHandler):

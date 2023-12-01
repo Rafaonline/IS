@@ -2,7 +2,7 @@ import xml.dom.minidom as md
 import xml.etree.ElementTree as et
 import ast
 
-from csv_reader import CSVReader
+from .csv_reader import CSVReader
 
 from ..entities.city import City
 from ..entities.store import Store
@@ -18,7 +18,6 @@ class CSVtoXMLConverter:
 
     def to_xml(self):
         # read city
-
         cities = self._reader.read_entities(
             builder=lambda row, _: City(row["City"]),
             get_keys=lambda row: row["City"]
