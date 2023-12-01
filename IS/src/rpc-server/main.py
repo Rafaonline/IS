@@ -4,47 +4,23 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 from functions.string_length import string_length
 from functions.string_reverse import string_reverse
-import psycopg2
+from functions.queries import Queries
+from functions.csv_to_xml_converter import CSVtoXMLConverter
+
+from db.db_conn import DatabaseConnection
+
+import xmlschema
 
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 
-def search_tr_by_product(product_name):
-    try:
-        # Connect to the database
-        connection = psycopg2.connect(user="is", password="is", host="is-db", port="5432", database="is")
-        cursor = connection.cursor()
-
-        # Execute the XML query to find Product ID based on the product name
-        product_id_query = (f"SELECT xpath('//Products/Product[@name=\"{product_name}\"]/@id', xml) "
-                            f"FROM public.imported_documents;")
-        cursor.execute(product_id_query)
-        product_id_result = cursor.fetchone()
-
-        if not product_id_result:
-            return f"Product with name '{product_name}' not found."
-
-        product_id = product_id_result[0]
-
-        # Execute the XML query to find transactions with the obtained Product ID
-        transaction_query = (f"SELECT xpath('//Transaction[Products/Product/@id=\"{product_id}\"]/@ID', xml)"
-                             f"FROM public.imported_documents;")
-        cursor.execute(transaction_query)
-        transaction_result = cursor.fetchall()
-
-        # Close the database connection
-        connection.close()
-
-        return transaction_result
-
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-
 with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as server:
     server.register_introspection_functions()
+    queries = Queries()
+    database = DatabaseConnection()
+    converter = CSVtoXMLConverter("/data/Retail_Transactions_Dataset.csv")
 
 
     def signal_handler(signum, frame):
@@ -56,6 +32,13 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
         print("exiting, gracefully")
         sys.exit(0)
 
+    csv_file = "/data/Retail_Transactions_Dataset.csv"
+    xsd_file = "/data/schema.xsd"
+    xml_file = converter.to_xml_file()
+
+    # xml validations
+    schema = xmlschema.XMLSchema(xsd_file)
+    schema.validate(xml_file)
 
     # signals
     signal.signal(signal.SIGTERM, signal_handler)
@@ -65,7 +48,15 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
     # register both functions
     server.register_function(string_reverse)
     server.register_function(string_length)
-    server.register_function(search_tr_by_product, 'search_tr_by_product')
+
+    server.register_function(queries.get_tr_by_prod_name)
+    server.register_function(queries.get_tr_by_cus_id)
+    server.register_function(queries.group_tr_by_store_id)
+    server.register_function(queries.order_tr_by_payment)
+    server.register_function(queries.get_city_by_store_id)
+
+    server.register_function(database.insert_xml_document)
+    server.register_function(database.soft_delete_xml_document)
 
     # start the server
     print("Starting the RPC Server...")
