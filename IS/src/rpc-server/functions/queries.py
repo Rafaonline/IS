@@ -1,5 +1,6 @@
 import psycopg2
-from ..db.db_conn import DatabaseConnection
+
+from db.db_conn import DatabaseConnection
 
 
 class Queries:

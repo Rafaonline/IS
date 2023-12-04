@@ -2,13 +2,16 @@ import xml.dom.minidom as md
 import xml.etree.ElementTree as et
 import ast
 
+
 from .csv_reader import CSVReader
 
-from ..entities.city import City
-from ..entities.store import Store
-from ..entities.produto import Product
-from ..entities.customer import Customer
-from ..entities.transaction import Transaction
+from functions.csv_reader import CSVReader
+
+from entities.city import City
+from entities.store import Store
+from entities.produto import Product
+from entities.customer import Customer
+from entities.transaction import Transaction
 
 
 class CSVtoXMLConverter:
