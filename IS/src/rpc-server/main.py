@@ -20,7 +20,7 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
     server.register_introspection_functions()
     queries = Queries()
     database = DatabaseConnection()
-    converter = CSVtoXMLConverter(path='/data/Retail_Transactions_Dataset.csv')
+    converter = CSVtoXMLConverter('/data/Retail_Transactions_Dataset.csv')
 
 
     def signal_handler(signum, frame):
@@ -32,14 +32,16 @@ with SimpleXMLRPCServer(('0.0.0.0', 9000), requestHandler=RequestHandler) as ser
         print("exiting, gracefully")
         sys.exit(0)
 
+    print("hello")
 
     csv_file = '/data/Retail_Transactions_Dataset.csv'
     xsd_file = '/data/schema.xsd'
-    xml_file = converter.to_xml_file()
+    xml_file = '/data/retail.xml'
 
     # xml validations
     schema = xmlschema.XMLSchema(xsd_file)
     schema.validate(xml_file)
+    print("validou")
 
     # signals
     signal.signal(signal.SIGTERM, signal_handler)

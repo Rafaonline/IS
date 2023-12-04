@@ -1,10 +1,8 @@
-import psycopg2
-
 from db.db_conn import DatabaseConnection
 
 
 class Queries:
-    def __int__(self):
+    def __init__(self):
         self.db = DatabaseConnection()
 
     def get_tr_by_prod_name(self, product_name):

@@ -7,7 +7,7 @@ server = xmlrpc.client.ServerProxy('http://is-rpc-server:9000')
 # list all transactions by product name
 def tr_by_prod_name(product_name):
     try:
-        transactions = server.get_tr_id_by_prod_name(product_name)
+        transactions = server.get_tr_by_prod_name(product_name)
 
         if transactions:
             print(f"Every transaction with {product_name} included.")
@@ -16,7 +16,7 @@ def tr_by_prod_name(product_name):
         else:
             print(f"There aren't any transactions with {product_name} included.")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error not work: {e}")
 
 
 def print_options():
