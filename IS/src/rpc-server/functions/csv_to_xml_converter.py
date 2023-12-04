@@ -5,7 +5,6 @@ import ast
 
 from .csv_reader import CSVReader
 
-from functions.csv_reader import CSVReader
 
 from entities.city import City
 from entities.store import Store
